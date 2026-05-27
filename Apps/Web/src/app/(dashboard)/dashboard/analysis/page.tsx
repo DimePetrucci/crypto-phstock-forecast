@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useIndicators, useOHLCV } from "@/hooks/use-market-data";
 import { IndicatorsCard } from "@/components/market/indicators-card";
+import { CandlestickChart } from "@/components/charts/candlestick-chart";
 import type { Interval } from "@/types/market";
 
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "ADAUSDT"];
@@ -19,9 +20,14 @@ export default function AnalysisPage() {
   const [interval, setInterval] = useState<Interval>("1d");
 
   const { data: indicators, isLoading, isError, error } = useIndicators(symbol, interval);
-  const { data: ohlcv } = useOHLCV(symbol, interval, 50);
+  const { data: ohlcv, isLoading: ohlcvLoading } = useOHLCV(symbol, interval, 120);
 
   const shortSymbol = symbol.replace("USDT", "");
+  const lastCandle = ohlcv?.items[ohlcv.items.length - 1];
+  const lastClose = lastCandle ? parseFloat(lastCandle.close) : null;
+  const prevCandle = ohlcv?.items[ohlcv.items.length - 2];
+  const prevClose = prevCandle ? parseFloat(prevCandle.close) : null;
+  const pctChange = lastClose && prevClose ? ((lastClose - prevClose) / prevClose) * 100 : null;
 
   return (
     <div className="space-y-6">
@@ -34,6 +40,7 @@ export default function AnalysisPage() {
         </div>
       </div>
 
+      {/* Controls */}
       <div className="flex flex-wrap gap-3">
         <div className="flex rounded-lg border border-white/[0.06] overflow-hidden">
           {SYMBOLS.map((sym) => (
@@ -68,21 +75,43 @@ export default function AnalysisPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
-        <p className="text-sm font-medium text-white">
-          {shortSymbol}/USDT
-          <span className="text-white/40 font-normal ml-2 text-xs">{interval.toUpperCase()} · Binance</span>
-        </p>
-        {ohlcv && (
-          <p className="text-xs text-white/30 mt-0.5">
-            {ohlcv.count} candles · last close:{" "}
-            <span className="text-white/50 tabular-nums">
-              ${parseFloat(ohlcv.items[ohlcv.items.length - 1]?.close ?? "0").toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </span>
+      {/* Chart header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-base font-semibold text-white">
+            {shortSymbol}/USDT
+            <span className="text-white/40 font-normal ml-2 text-xs">{interval.toUpperCase()} · Binance</span>
           </p>
+          {lastClose && (
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-lg font-bold text-white tabular-nums">
+                ${lastClose.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </span>
+              {pctChange !== null && (
+                <span className={`text-xs font-medium ${pctChange >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  {pctChange >= 0 ? "+" : ""}{pctChange.toFixed(2)}%
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+        {ohlcv && (
+          <p className="text-xs text-white/30">{ohlcv.count} candles</p>
         )}
       </div>
 
+      {/* Candlestick Chart */}
+      <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+        {ohlcvLoading ? (
+          <div className="h-[420px] flex items-center justify-center text-white/30 text-sm animate-pulse">
+            Loading chart data…
+          </div>
+        ) : (
+          <CandlestickChart candles={ohlcv?.items ?? []} height={420} />
+        )}
+      </div>
+
+      {/* Indicators */}
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[...Array(4)].map((_, i) => (
@@ -101,58 +130,6 @@ export default function AnalysisPage() {
 
       {indicators && !isLoading && (
         <IndicatorsCard data={indicators} />
-      )}
-
-      {ohlcv && ohlcv.items.length > 0 && (
-        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/[0.06]">
-            <p className="text-sm font-medium text-white/60">
-              OHLCV — {shortSymbol} · {interval.toUpperCase()}
-              <span className="text-white/30 font-normal ml-1 text-xs">({ohlcv.count} candles)</span>
-            </p>
-          </div>
-          <div className="overflow-x-auto max-h-64 overflow-y-auto">
-            <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-[#0a0a0a]">
-                <tr className="border-b border-white/[0.04]">
-                  <th className="px-4 py-2 text-left text-white/30 font-medium">Date</th>
-                  <th className="px-4 py-2 text-right text-white/30 font-medium">Open</th>
-                  <th className="px-4 py-2 text-right text-white/30 font-medium">High</th>
-                  <th className="px-4 py-2 text-right text-white/30 font-medium">Low</th>
-                  <th className="px-4 py-2 text-right text-white/30 font-medium">Close</th>
-                  <th className="px-4 py-2 text-right text-white/30 font-medium">Volume</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...ohlcv.items].reverse().map((candle, i) => {
-                  const isGreen = parseFloat(candle.close) >= parseFloat(candle.open);
-                  return (
-                    <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                      <td className="px-4 py-2 text-white/50">
-                        {new Date(candle.open_time).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })}
-                      </td>
-                      <td className="px-4 py-2 text-right text-white/60 tabular-nums">
-                        {parseFloat(candle.open).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-2 text-right text-emerald-400/70 tabular-nums">
-                        {parseFloat(candle.high).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-2 text-right text-red-400/70 tabular-nums">
-                        {parseFloat(candle.low).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className={`px-4 py-2 text-right tabular-nums font-medium ${isGreen ? "text-emerald-400" : "text-red-400"}`}>
-                        {parseFloat(candle.close).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                      </td>
-                      <td className="px-4 py-2 text-right text-white/40 tabular-nums">
-                        {(parseFloat(candle.volume) / 1_000).toFixed(1)}K
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
       )}
     </div>
   );

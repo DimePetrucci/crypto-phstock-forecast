@@ -4,6 +4,36 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
+class PortfolioCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: str | None = None
+    currency: str = "USDT"
+
+
+class PortfolioRead(BaseModel):
+    model_config = {"from_attributes": True}
+    id: UUID
+    name: str
+    description: str | None
+    currency: str
+
+
+class HoldingCreate(BaseModel):
+    asset_symbol: str = Field(..., min_length=1, max_length=30)
+    asset_name: str | None = None
+    market_type: str = "crypto"
+    quantity: Decimal = Field(..., gt=0)
+    avg_buy_price: Decimal = Field(..., gt=0)
+    exchange: str | None = None
+
+
+class HoldingUpdate(BaseModel):
+    quantity: Decimal | None = Field(default=None, gt=0)
+    avg_buy_price: Decimal | None = Field(default=None, gt=0)
+    asset_name: str | None = None
+    exchange: str | None = None
+
+
 class HoldingWithPnL(BaseModel):
     id: UUID
     asset_symbol: str

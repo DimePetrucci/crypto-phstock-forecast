@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.v1.endpoints import auth, health, market, sentiment, intelligence, alerts, watchlist, portfolio
+from api.v1.endpoints import auth, health, market, sentiment, intelligence, alerts, watchlist, portfolio, journal
 
 router = APIRouter()
 
@@ -11,3 +11,4 @@ router.include_router(intelligence.router, prefix="/intelligence", tags=["intell
 router.include_router(alerts.router, prefix="/alerts", tags=["alerts"])
 router.include_router(watchlist.router, prefix="/watchlist", tags=["watchlist"])
 router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
+router.include_router(journal.router, prefix="/journal/trades", tags=["journal"])
