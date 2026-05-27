@@ -69,6 +69,21 @@ class Settings(BaseSettings):
     # TRACKED_CRYPTO_SYMBOLS=["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT","ADAUSDT"]
     TRACKED_CRYPTO_SYMBOLS: List[str] = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "ADAUSDT"]
 
+    # External news/sentiment APIs
+    CRYPTOPANIC_API_KEY: str = ""
+    FEAR_GREED_API_URL: str = "https://api.alternative.me/fng/"
+    CRYPTOPANIC_API_URL: str = "https://cryptopanic.com/api/free/v1/posts/"
+
+    # Sentiment cache TTLs (seconds)
+    FEAR_GREED_CACHE_TTL: int = 600
+    SENTIMENT_NEWS_CACHE_TTL: int = 300
+    INTELLIGENCE_CACHE_TTL: int = 300
+
+    # Scheduler intervals
+    SCHEDULER_SENTIMENT_INTERVAL_MINUTES: int = 10
+    SCHEDULER_INTELLIGENCE_INTERVAL_MINUTES: int = 5
+    SCHEDULER_ALERT_INTERVAL_SECONDS: int = 30
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"

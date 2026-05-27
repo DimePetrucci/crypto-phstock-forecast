@@ -19,6 +19,9 @@ from ws.routes import router as ws_router
 from ws.broadcaster import start_market_broadcaster
 from services.market.binance_rest import close_binance_rest
 from services.market.coingecko import close_coingecko
+from services.sentiment.fear_greed import close_fear_greed_client
+from services.sentiment.cryptopanic import close_cryptopanic_client
+from scheduler.setup import start_scheduler, stop_scheduler
 
 configure_logging()
 logger = get_logger(__name__)
@@ -29,8 +32,10 @@ async def lifespan(app: FastAPI):
     logger.info("startup_begin", version=settings.APP_VERSION, env=settings.ENVIRONMENT)
     await init_db()
     broadcaster_task = await start_market_broadcaster()
+    await start_scheduler()
     yield
     logger.info("shutdown_begin")
+    await stop_scheduler()
     broadcaster_task.cancel()
     try:
         await broadcaster_task
@@ -38,6 +43,8 @@ async def lifespan(app: FastAPI):
         pass
     await close_binance_rest()
     await close_coingecko()
+    await close_fear_greed_client()
+    await close_cryptopanic_client()
     await close_db()
     await close_redis()
 

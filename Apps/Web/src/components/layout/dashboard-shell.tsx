@@ -11,6 +11,9 @@ import {
   Bell,
   Settings,
   LogOut,
+  Brain,
+  Zap,
+  Bookmark,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,6 +23,9 @@ const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/markets", label: "Markets", icon: TrendingUp },
   { href: "/dashboard/analysis", label: "Analysis", icon: BarChart2 },
+  { href: "/dashboard/sentiment", label: "Sentiment", icon: Brain },
+  { href: "/dashboard/intelligence", label: "Intelligence", icon: Zap },
+  { href: "/dashboard/watchlist", label: "Watchlist", icon: Bookmark },
   { href: "/dashboard/portfolio", label: "Portfolio", icon: Briefcase },
   { href: "/dashboard/journal", label: "Journal", icon: BookOpen },
   { href: "/dashboard/alerts", label: "Alerts", icon: Bell },
