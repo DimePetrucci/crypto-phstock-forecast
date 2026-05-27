@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item *)",
+      "PowerShell(docker compose *)",
+      "PowerShell(Start-Sleep -Seconds 5; Invoke-RestMethod -Uri \"http://localhost:8000/api/v1/health\" -Method GET | ConvertTo-Json)",
+      "PowerShell(Start-Sleep -Seconds 5; Invoke-RestMethod -Uri \"http://localhost:8000/api/v1/health\" | ConvertTo-Json)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:8000/api/v1/health/detailed\" | ConvertTo-Json)",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000\" -UseBasicParsing; Write-Host \"Web status: $\\($r.StatusCode\\)\")",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:8000/api/docs\" -UseBasicParsing; Write-Host \"Docs status: $\\($r.StatusCode\\)\")"
+    ]
+  }
+}
