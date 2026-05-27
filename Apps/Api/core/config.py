@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, field_validator
+from pydantic import field_validator
 from typing import List
 
 
@@ -51,6 +51,23 @@ class Settings(BaseSettings):
     BINANCE_API_SECRET: str = ""
     COINGECKO_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+
+    # Binance
+    BINANCE_BASE_URL: str = "https://api.binance.com"
+    BINANCE_WS_BASE_URL: str = "wss://stream.binance.com:9443"
+
+    # CoinGecko
+    COINGECKO_BASE_URL: str = "https://api.coingecko.com/api/v3"
+
+    # Market data cache TTLs (seconds)
+    MARKET_PRICE_CACHE_TTL: int = 10
+    MARKET_OHLCV_CACHE_TTL: int = 60
+    MARKET_INDICATORS_CACHE_TTL: int = 60
+    COINGECKO_CACHE_TTL: int = 300
+
+    # Tracked symbols for live streaming — set as JSON array in env:
+    # TRACKED_CRYPTO_SYMBOLS=["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT","ADAUSDT"]
+    TRACKED_CRYPTO_SYMBOLS: List[str] = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "ADAUSDT"]
 
     # Logging
     LOG_LEVEL: str = "INFO"

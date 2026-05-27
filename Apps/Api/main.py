@@ -16,6 +16,9 @@ from core.exceptions import (
 )
 from api.v1.router import router as v1_router
 from ws.routes import router as ws_router
+from ws.broadcaster import start_market_broadcaster
+from services.market.binance_rest import close_binance_rest
+from services.market.coingecko import close_coingecko
 
 configure_logging()
 logger = get_logger(__name__)
@@ -25,8 +28,16 @@ logger = get_logger(__name__)
 async def lifespan(app: FastAPI):
     logger.info("startup_begin", version=settings.APP_VERSION, env=settings.ENVIRONMENT)
     await init_db()
+    broadcaster_task = await start_market_broadcaster()
     yield
     logger.info("shutdown_begin")
+    broadcaster_task.cancel()
+    try:
+        await broadcaster_task
+    except Exception:
+        pass
+    await close_binance_rest()
+    await close_coingecko()
     await close_db()
     await close_redis()
 

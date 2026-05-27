@@ -16,3 +16,4 @@ structlog==24.4.0
 prometheus-fastapi-instrumentator==7.0.0
 tenacity==9.0.0
 orjson==3.10.12
+numpy==2.2.0

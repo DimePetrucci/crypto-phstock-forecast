@@ -30,8 +30,8 @@ class ValidationException(AppException):
 
 
 class RateLimitException(AppException):
-    def __init__(self):
-        super().__init__(status.HTTP_429_TOO_MANY_REQUESTS, "Rate limit exceeded", "RATE_LIMIT")
+    def __init__(self, detail: str = "Rate limit exceeded"):
+        super().__init__(status.HTTP_429_TOO_MANY_REQUESTS, detail, "RATE_LIMIT")
 
 
 async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
