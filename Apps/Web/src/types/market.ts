@@ -1,7 +1,8 @@
 export type MarketSource = "binance" | "coingecko";
 export type RSISignal = "oversold" | "neutral" | "overbought";
 export type MACDTrend = "bullish" | "bearish" | "neutral";
-export type Interval = "4h" | "1d" | "1w" | "1m" | "1y";
+// "1m"/"1M" = 1 month; intraday uses "1min", "5min", "30min", "1h", "12h"
+export type Interval = "1min" | "5min" | "30min" | "1h" | "4h" | "12h" | "1d" | "1w" | "1m" | "1y";
 
 export interface MarketTick {
   symbol: string;

@@ -84,6 +84,15 @@ class Settings(BaseSettings):
     SCHEDULER_INTELLIGENCE_INTERVAL_MINUTES: int = 5
     SCHEDULER_ALERT_INTERVAL_SECONDS: int = 30
 
+    # Email (SMTP)
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "noreply@investiq.local"
+    SMTP_TLS: bool = True
+    APP_URL: str = "http://localhost:3000"
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "json"

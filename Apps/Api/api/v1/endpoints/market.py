@@ -38,15 +38,21 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 # Map frontend-friendly interval names to Binance interval strings
+# NOTE: "1m"/"1M" here means 1-month (not 1-minute); intraday uses "1min", "5min", etc.
 _INTERVAL_MAP: dict[str, str] = {
+    "1min": "1m",
+    "5min": "5m",
+    "30min": "30m",
+    "1h": "1h",
     "4h": "4h",
+    "12h": "12h",
     "1d": "1d",
     "1w": "1w",
-    "1m": "1M",
-    "1y": "1M",  # fetch monthly, limit 12
+    "1m": "1M",   # 1 month
+    "1y": "1M",   # fetch monthly, limit 12
 }
 
-IntervalParam = Literal["4h", "1d", "1w", "1m", "1y"]
+IntervalParam = Literal["1min", "5min", "30min", "1h", "4h", "12h", "1d", "1w", "1m", "1y"]
 
 
 @router.get("/prices", response_model=MarketPricesResponse)
@@ -114,7 +120,7 @@ async def get_ohlcv(
 ) -> OHLCVResponse:
     symbol = symbol.upper()
     binance_interval = _INTERVAL_MAP.get(interval, "1d")
-    actual_limit = 12 if interval == "1y" else limit
+    actual_limit = 12 if interval == "1y" else min(limit, 500 if interval in ("1min", "5min") else limit)
 
     cached = await get_cached_ohlcv(symbol, interval)
     if cached:
@@ -144,7 +150,7 @@ async def get_indicators(
 
     # Fetch OHLCV (need enough data for SMA-200)
     binance_interval = _INTERVAL_MAP.get(interval, "1d")
-    limit = 250 if interval in ("1d", "1w") else 200
+    limit = 500 if interval in ("1min", "5min", "30min", "1h") else (250 if interval in ("1d", "1w") else 200)
 
     try:
         client = await get_binance_rest()

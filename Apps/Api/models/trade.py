@@ -34,6 +34,10 @@ class Trade(Base):
     notes = Column(Text, nullable=True)
     strategy_tags = Column(ARRAY(String), nullable=True)
 
+    # Phase 6 fields
+    investment_amount = Column(Numeric(precision=28, scale=10), nullable=True)  # total capital deployed
+    category = Column(String(50), nullable=True)  # swing | scalp | dca | long-term | short | spot
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

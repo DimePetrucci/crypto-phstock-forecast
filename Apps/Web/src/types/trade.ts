@@ -1,3 +1,5 @@
+export type TradeCategory = "swing" | "scalp" | "dca" | "long-term" | "short" | "spot" | "custom";
+
 export interface TradeCreate {
   portfolio_id: string;
   asset_symbol: string;
@@ -17,6 +19,8 @@ export interface TradeCreate {
   pnl_percentage?: number;
   notes?: string;
   strategy_tags?: string[];
+  investment_amount?: number;
+  category?: TradeCategory;
 }
 
 export interface TradeUpdate {
@@ -28,6 +32,8 @@ export interface TradeUpdate {
   pnl_percentage?: number;
   notes?: string;
   strategy_tags?: string[];
+  investment_amount?: number;
+  category?: TradeCategory;
 }
 
 export interface TradeRead {
@@ -51,6 +57,8 @@ export interface TradeRead {
   break_even_price: string | null;
   notes: string | null;
   strategy_tags: string[] | null;
+  investment_amount: string | null;
+  category: string | null;
   created_at: string;
 }
 

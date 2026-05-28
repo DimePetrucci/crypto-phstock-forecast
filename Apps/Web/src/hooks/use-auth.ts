@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 
 interface LoginPayload { email: string; password: string }
 interface RegisterPayload { email: string; username: string; password: string; full_name?: string }
+interface ChangePasswordPayload { current_password: string; new_password: string }
+interface ResetPasswordPayload { token: string; new_password: string }
 
 export function useLogin() {
   const { setTokens, setUser } = useAuthStore();
@@ -54,5 +56,54 @@ export function useCurrentUser() {
     queryKey: ["me"],
     queryFn: () => apiClient.get("/auth/me").then((r) => r.data),
     enabled: isAuthenticated,
+  });
+}
+
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: (token: string) =>
+      apiClient.post("/auth/verify-email", { token }).then((r) => r.data),
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      apiClient.post("/auth/resend-verification", { email }).then((r) => r.data),
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      apiClient.post("/auth/forgot-password", { email }).then((r) => r.data),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (data: ResetPasswordPayload) =>
+      apiClient.post("/auth/reset-password", data).then((r) => r.data),
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordPayload) =>
+      apiClient.post("/auth/change-password", data).then((r) => r.data),
+  });
+}
+
+export function useDeleteAccount() {
+  const { logout } = useAuthStore();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (password: string) =>
+      apiClient.delete("/auth/account", { data: { password } }),
+    onSuccess: () => {
+      logout();
+      router.push("/login");
+    },
   });
 }

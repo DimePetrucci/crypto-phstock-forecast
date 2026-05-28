@@ -1,4 +1,5 @@
 from __future__ import annotations
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import select
@@ -6,6 +7,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.trade import Trade
 from schemas.trade import TradeCreate, TradeUpdate
+
+
+async def _update_avg_price(db: AsyncSession, portfolio_id: UUID, symbol: str, new_qty: Decimal, new_price: Decimal) -> None:
+    """Recalculate weighted average buy price for a holding after a new buy trade."""
+    from models.portfolio import PortfolioHolding
+    result = await db.execute(
+        select(PortfolioHolding).where(
+            PortfolioHolding.portfolio_id == portfolio_id,
+            PortfolioHolding.asset_symbol == symbol,
+        )
+    )
+    holding = result.scalars().first()
+    if holding is None:
+        return
+    old_qty = Decimal(str(holding.quantity))
+    old_avg = Decimal(str(holding.avg_buy_price))
+    total_qty = old_qty + new_qty
+    if total_qty > 0:
+        holding.avg_buy_price = (old_qty * old_avg + new_qty * new_price) / total_qty
 
 
 async def create_trade(db: AsyncSession, user_id: str, data: TradeCreate) -> Trade:
@@ -36,8 +56,15 @@ async def create_trade(db: AsyncSession, user_id: str, data: TradeCreate) -> Tra
         break_even_price=data.break_even_price,
         notes=data.notes,
         strategy_tags=data.strategy_tags,
+        investment_amount=data.investment_amount,
+        category=data.category,
     )
     db.add(trade)
+
+    # Auto-update weighted average price when recording a buy
+    if data.trade_type == "buy" and data.buy_price:
+        await _update_avg_price(db, data.portfolio_id, data.asset_symbol.upper(), data.quantity, data.buy_price)
+
     await db.commit()
     await db.refresh(trade)
     return trade

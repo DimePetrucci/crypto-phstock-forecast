@@ -24,6 +24,45 @@ The platform exists to:
 
 ---
 
+## Platform Nature
+
+The platform is NOT a broker or exchange.
+
+The platform IS:
+
+* a market intelligence platform
+* a monitoring and signal platform
+* an analysis and projection probability platform
+* a trade journaling and decision-support platform
+
+Users execute trades manually and externally through:
+
+* Binance
+* Coins.ph
+* PSE-registered stock brokers
+* other supported exchanges and platforms
+
+The platform DOES NOT:
+
+* execute trades on behalf of users
+* hold or manage user funds
+* connect to exchange accounts for order execution
+* operate as a licensed financial institution
+
+---
+
+## Product Priority Direction
+
+The system should evolve toward:
+
+* **Explainable intelligence** — every signal must have a clear human-readable reason
+* **Deterministic signals** — math-based, auditable, reproducible before AI enhancement
+* **Actionable recommendations** — clear buy/accumulate/hold/reduce/avoid outputs
+* **Portfolio-aware guidance** — recommendations consider the user's existing positions, exposure, and buying power
+* **Multi-market support** — crypto and Philippine stocks treated equally and analyzed side-by-side
+
+---
+
 # Core Architecture Principles
 
 ## 1. Modular Architecture
@@ -371,22 +410,65 @@ Must support:
 
 # Development Workflow
 
-Build in phases.
+Build in phases. Completed phases are marked.
 
-Recommended order:
+## Phase 1 — Foundation Architecture ✓
+Core setup: FastAPI, Next.js, PostgreSQL, Redis, Docker, JWT auth, Alembic migrations.
 
-1. Foundation architecture
-2. Authentication
-3. Market data engine
-4. Technical analysis engine
-5. Fundamental analysis engine
-6. Sentiment engine
-7. AI reasoning engine
-8. Portfolio intelligence
-9. Alerts system
-10. Backtesting
-11. Optimization
-12. Deployment
+## Phase 2 — Market Data Engine ✓
+Binance REST + WebSocket, CoinGecko, OHLCV, RSI/MACD/EMA/SMA/Bollinger indicators, Redis caching.
+
+## Phase 3 — Intelligence & Sentiment Engine ✓
+Sentiment aggregation (Fear & Greed, CryptoPanic), signal scoring, intelligence reports, watchlist, alerts engine, background scheduler.
+
+## Phase 4 — Charts, Portfolio & Journal ✓
+Candlestick charts (lightweight-charts), portfolio CRUD, trade journal, live dashboard KPIs.
+
+## Phase 4.5 — Account & UX Hardening
+* Password confirmation on register
+* Password visibility toggles
+* Forgot password flow (token generation, email/log)
+* Reset password via token
+* Email verification on register
+* Resend verification email
+* Account deletion
+* Auth UX improvements
+
+## Phase 5 — Expanded Market Intelligence
+* Additional timeframes: 1m, 5m, 30m, 1h, 12h
+* Asset selector improvements
+* Timeframe selector improvements
+* Better analysis controls
+
+## Phase 6 — Manual Trade Intelligence System
+* Manual trade entry for Binance, Coins.ph, and stocks
+* Trade fields: date, time, asset, category, platform, entry price, quantity, fees, notes, investment amount
+* Portfolio-aware journal tracking
+* Average price tracking (weighted avg auto-calculation)
+
+## Phase 7 — Fundamental Analysis Engine
+* PSE data provider (yfinance .PS tickers)
+* CoinGecko fundamentals (market cap, ATH, supply, volume/mcap ratio)
+* Fundamental scoring layer
+
+## Phase 8 — AI Explanation Engine
+* Claude API integration for signal explanation text
+* Explainable reasoning for all major signals
+* Trade pattern analysis from journal history
+
+## Phase 9 — Backtesting Foundation
+* Historical signal validation
+* Strategy simulation engine
+
+## Phase 10 — Advanced Analytics & Optimization
+* Advanced portfolio analytics
+* Monthly/yearly performance charts
+* Optimization and production hardening
+
+## Phase 11 — Deployment
+* Docker Compose production config
+* CI/CD pipeline
+* Monitoring and uptime
 
 ---
 

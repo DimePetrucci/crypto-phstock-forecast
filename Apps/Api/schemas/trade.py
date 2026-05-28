@@ -26,6 +26,8 @@ class TradeCreate(BaseModel):
     break_even_price: Decimal | None = None
     notes: str | None = None
     strategy_tags: list[str] | None = None
+    investment_amount: Decimal | None = Field(default=None, ge=0)
+    category: str | None = Field(default=None, max_length=50)
 
 
 class TradeUpdate(BaseModel):
@@ -37,6 +39,8 @@ class TradeUpdate(BaseModel):
     pnl_percentage: Decimal | None = None
     notes: str | None = None
     strategy_tags: list[str] | None = None
+    investment_amount: Decimal | None = Field(default=None, ge=0)
+    category: str | None = Field(default=None, max_length=50)
 
 
 class TradeRead(BaseModel):
@@ -62,6 +66,8 @@ class TradeRead(BaseModel):
     break_even_price: Decimal | None
     notes: str | None
     strategy_tags: list[str] | None
+    investment_amount: Decimal | None
+    category: str | None
     created_at: datetime
 
 
